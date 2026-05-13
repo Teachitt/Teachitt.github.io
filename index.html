@@ -67,7 +67,17 @@
   <div class="table-wrap">
     <table>
       <thead>
-        <tr><th data-i18n="th_stock">Stock</th><th data-i18n="th_date">Date</th><th data-i18n="th_shares">Shares</th><th data-i18n="th_cost_usd">Cost (USD)</th><th data-i18n="th_last_usd">Last (USD)</th><th data-i18n="th_val_thb">Value (THB)</th><th data-i18n="th_val_usd">Value (USD)</th><th data-i18n="th_pnl">P&L</th></tr>
+        <tr>
+          <th data-i18n="th_stock">Stock</th>
+          <th data-i18n="th_date">Date</th>
+          <th data-i18n="th_shares">Shares</th>
+          <th data-i18n="th_cost_thb">Cost (THB)</th> <!-- เพิ่มคอลัมน์ต้นทุนเงินบาท -->
+          <th data-i18n="th_cost_usd">Cost (USD)</th>
+          <th data-i18n="th_last_usd">Last (USD)</th>
+          <th data-i18n="th_val_thb">Value (THB)</th>
+          <th data-i18n="th_val_usd">Value (USD)</th>
+          <th data-i18n="th_pnl">P&L</th>
+        </tr>
       </thead>
       <tbody id="table-body"></tbody>
     </table>
@@ -83,8 +93,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 <script>
   const i18n = {
-    en: { top_title: "My Stock Portfolio", btn_refresh: "Update Prices", overview_label: "Portfolio Overview", trades_label: "Trade History", th_stock: "Stock", th_date: "Date", th_shares: "Shares", th_cost_usd: "Cost (USD)", th_last_usd: "Last (USD)", th_val_thb: "Value (THB)", th_val_usd: "Value (USD)", th_pnl: "P&L", metric_cost: "Total Cost (THB)", metric_val_thb: "Current Value (THB)", metric_val_usd: "Current Value (USD)", metric_pnl: "Total P&L (USD)", metric_ex: "USD/THB Rate", growth_chart_title: "Portfolio Growth (THB)", ticker_chart_title: "Stock Allocation (%)", chart_cost: "Cumulative Cost", chart_value: "Market Value" },
-    th: { top_title: "พอร์ตหุ้นของฉัน", btn_refresh: "อัพเดทราคาล่าสุด", overview_label: "ภาพรวมพอร์ต", trades_label: "รายการซื้อขาย", th_stock: "หุ้น", th_date: "วันที่", th_shares: "จำนวนหุ้น", th_cost_usd: "ต้นทุน (USD)", th_last_usd: "ราคาล่าสุด (USD)", th_val_thb: "มูลค่า (THB)", th_val_usd: "มูลค่า (USD)", th_pnl: "กำไร/ขาดทุน", metric_cost: "ต้นทุนรวม (THB)", metric_val_thb: "มูลค่าปัจจุบัน (THB)", metric_val_usd: "มูลค่าปัจจุบัน (USD)", metric_pnl: "กำไร/ขาดทุนรวม (USD)", metric_ex: "ค่าเงิน USD/THB", growth_chart_title: "การเติบโตของพอร์ต (THB)", ticker_chart_title: "สัดส่วนหุ้น (%)", chart_cost: "ต้นทุนสะสม", chart_value: "มูลค่าตามตลาด" }
+    en: { top_title: "My Stock Portfolio", btn_refresh: "Update Prices", overview_label: "Portfolio Overview", trades_label: "Trade History", th_stock: "Stock", th_date: "Date", th_shares: "Shares", th_cost_thb: "Cost (THB)", th_cost_usd: "Cost (USD)", th_last_usd: "Last (USD)", th_val_thb: "Value (THB)", th_val_usd: "Value (USD)", th_pnl: "P&L", th_total: "Total", metric_cost: "Total Cost (THB)", metric_val_thb: "Current Value (THB)", metric_val_usd: "Current Value (USD)", metric_pnl: "Total P&L (USD)", metric_ex: "USD/THB Rate", growth_chart_title: "Portfolio Growth (THB)", ticker_chart_title: "Stock Allocation (%)", chart_cost: "Cumulative Cost", chart_value: "Market Value" },
+    th: { top_title: "พอร์ตหุ้นของฉัน", btn_refresh: "อัพเดทราคาล่าสุด", overview_label: "ภาพรวมพอร์ต", trades_label: "รายการซื้อขาย", th_stock: "หุ้น", th_date: "วันที่", th_shares: "จำนวนหุ้น", th_cost_thb: "ต้นทุน (THB)", th_cost_usd: "ต้นทุน (USD)", th_last_usd: "ราคาล่าสุด (USD)", th_val_thb: "มูลค่า (THB)", th_val_usd: "มูลค่า (USD)", th_pnl: "กำไร/ขาดทุน", th_total: "รวม", metric_cost: "ต้นทุนรวม (THB)", metric_val_thb: "มูลค่าปัจจุบัน (THB)", metric_val_usd: "มูลค่าปัจจุบัน (USD)", metric_pnl: "กำไร/ขาดทุนรวม (USD)", metric_ex: "ค่าเงิน USD/THB", growth_chart_title: "การเติบโตของพอร์ต (THB)", ticker_chart_title: "สัดส่วนหุ้น (%)", chart_cost: "ต้นทุนสะสม", chart_value: "มูลค่าตามตลาด" }
   };
 
   let currentLang = localStorage.getItem('dash_lang') || 'en';
@@ -92,14 +102,12 @@
   const FINNHUB_KEY = 'd81cmgpr01qler4hqqfgd81cmgpr01qler4hqqg0';
   const CSV_URL = 'https://docs.google.com/spreadsheets/d/1zv1K04AhC0-oOw-vYBhrtq9KV7pqS2P2SnGWTg8S5Ls/export?format=csv';
 
-  // ใช้ API ที่อนุญาต CORS และเสถียรกว่าเดิม
   async function fetchExRate() {
     try {
       const response = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
       const data = await response.json();
       if (data && data.rates && data.rates.THB) {
         liveExRate = data.rates.THB;
-        console.log("Success! Live Ex Rate:", liveExRate);
       }
     } catch (e) { 
       console.warn("API Error, stay at fallback 35.0"); 
@@ -123,7 +131,6 @@
         
         trades.forEach(t => livePrices[t.ticker] = t.priceUSD);
         
-        // บังคับให้โหลดค่าเงินให้จบก่อนวาดหน้าจอครั้งแรก
         await fetchExRate();
         applyLanguage(currentLang);
         fetchLivePrices();
@@ -186,19 +193,54 @@
   }
 
   function renderTable() {
-    document.getElementById('table-body').innerHTML = trades.map(t => {
+    let totalCostTHB = 0, totalCostUSD = 0, totalValTHB = 0, totalValUSD = 0, totalPnlUSD = 0;
+
+    const rowsHTML = trades.map(t => {
       const curP = livePrices[t.ticker] || t.priceUSD;
       const curValUSD = curP * t.shares;
       const curValTHB = curValUSD * liveExRate;
       const pnl = curValUSD - t.amountUSD;
       const pnlPct = ((curP - t.priceUSD) / t.priceUSD) * 100;
+      
+      // คำนวณสะสมสำหรับแถวสรุปรวม (Footer)
+      totalCostTHB += t.amountTHB;
+      totalCostUSD += t.amountUSD;
+      totalValTHB += curValTHB;
+      totalValUSD += curValUSD;
+      totalPnlUSD += pnl;
+
       return `<tr>
         <td><b>${t.ticker}</b></td>
-        <td>${t.date}</td><td>${t.shares.toFixed(4)}</td><td>$${formatNum(t.priceUSD)}</td><td>$${formatNum(curP)}</td>
-        <td style="font-weight:600">฿${formatNum(curValTHB, 0)}</td><td>$${formatNum(curValUSD)}</td>
+        <td>${t.date}</td>
+        <td>${t.shares.toFixed(4)}</td>
+        <td>฿${formatNum(t.amountTHB, 0)}</td> <!-- ข้อมูลต้นทุน THB -->
+        <td>$${formatNum(t.priceUSD)}</td>
+        <td>$${formatNum(curP)}</td>
+        <td style="font-weight:600">฿${formatNum(curValTHB, 0)}</td>
+        <td>$${formatNum(curValUSD)}</td>
         <td class="${pnl>=0?'pnl-up':'pnl-down'}"><b>${pnl>=0?'+':''}$${formatNum(Math.abs(pnl))}</b><br><small>${pnlPct>=0?'+':''}${pnlPct.toFixed(2)}%</small></td>
       </tr>`;
     }).join('');
+
+    const totalPnlPct = totalCostUSD > 0 ? (totalPnlUSD / totalCostUSD) * 100 : 0;
+
+    // สร้างบรรทัดสรุปรวมท้ายตาราง
+    const footerHTML = `
+      <tr style="background: var(--color-border-tertiary); font-weight: 600;">
+        <td colspan="3" style="text-align: right;">${i18n[currentLang].th_total}</td>
+        <td>฿${formatNum(totalCostTHB, 0)}</td>
+        <td>$${formatNum(totalCostUSD)}</td>
+        <td>-</td>
+        <td>฿${formatNum(totalValTHB, 0)}</td>
+        <td>$${formatNum(totalValUSD)}</td>
+        <td class="${totalPnlUSD>=0?'pnl-up':'pnl-down'}">
+          ${totalPnlUSD>=0?'+':''}$${formatNum(Math.abs(totalPnlUSD))}<br>
+          <small>${totalPnlPct>=0?'+':''}${formatNum(totalPnlPct)}%</small>
+        </td>
+      </tr>
+    `;
+
+    document.getElementById('table-body').innerHTML = rowsHTML + footerHTML;
   }
 
   function renderCharts() {
@@ -224,7 +266,7 @@
       options: { responsive: true, maintainAspectRatio: false }
     });
 
-    // 2. Pie Chart พร้อมแสดง %
+    // 2. Pie Chart
     const ctxP = document.getElementById('tickerPieChart').getContext('2d');
     if (charts.pie) charts.pie.destroy();
     const byTicker = {};
