@@ -42,7 +42,7 @@
     .summary-card .val { font-size: 24px; font-weight: 600; margin-bottom: 4px; }
     .summary-card .desc { font-size: 11px; color: var(--color-text-desc); line-height: 1.4; }
 
-    /* --- Scrollbar กลับเป็นแบบเส้นบางสวยๆ แบบเดิม --- */
+    /* --- Scrollbar --- */
     .table-wrap::-webkit-scrollbar { width: 6px; }
     .table-wrap::-webkit-scrollbar-track { background: transparent; }
     .table-wrap::-webkit-scrollbar-thumb { background-color: var(--color-border); border-radius: 10px; }
@@ -66,7 +66,8 @@
     tbody tr:hover:not(.row-total) { background: rgba(255, 255, 255, 0.02); }
     tbody td:first-child { text-align: left; color: #fff; font-weight: 500; }
 
-    .row-total td { position: sticky; bottom: 0; background-color: #0f172a !important; color: #fff; font-weight: 600; z-index: 20; border-bottom: none !important; }
+    /* การล็อคบรรทัด Total (โหมดคอมพิวเตอร์) */
+    .row-total td { position: sticky; bottom: -1px; background-color: #0f172a !important; color: #fff; font-weight: 600; z-index: 20; border-bottom: none !important; }
     .row-total td::before { content: ""; position: absolute; left: 0; top: 0; width: 100%; height: 2px; background-color: var(--color-primary); z-index: 21; }
     .row-total td:first-child { text-align: right; border-bottom-left-radius: 16px; } 
     .row-total td:last-child { border-bottom-right-radius: 16px; }
@@ -91,8 +92,10 @@
         border: none; background: transparent; padding: 0; max-height: none; overflow-y: visible; margin-bottom: 1.5rem;
       }
       
-      table, thead, tbody, th, td, tr { display: block; }
-      thead tr { display: none; } 
+      /* ปิดหัวตารางทิ้งไปเลย */
+      thead { display: none !important; }
+      
+      table, tbody, td, tr { display: block; width: 100%; }
       
       tbody tr {
         background: rgba(255, 255, 255, 0.03);
@@ -100,6 +103,7 @@
         border-radius: 16px;
         margin-bottom: 16px;
         padding: 16px;
+        position: relative;
       }
       
       tbody td {
@@ -108,6 +112,7 @@
       }
       tbody td:last-child { border-bottom: none; }
       
+      /* ดึงชื่อหัวข้อมาแปะในข้อมูลแต่ละแถว */
       tbody td::before {
         content: attr(data-label); font-size: 13px; color: var(--color-text-desc);
         text-transform: uppercase; font-weight: 500; text-align: left; margin-right: 15px;
@@ -117,10 +122,22 @@
         font-size: 18px; border-bottom: 1px solid var(--color-border); padding-bottom: 12px; margin-bottom: 8px;
       }
       
+      /* -------------------------------------------------------------------------
+         🔥 แก้บั๊กตัวหนังสือทับกัน: ปลดล็อค position: absolute ออกให้หมด! 
+         ------------------------------------------------------------------------- */
       .row-total { background: rgba(59, 130, 246, 0.1) !important; border-color: var(--color-primary) !important; }
-      .row-total td { position: static; background: transparent !important; border-bottom: 1px dotted rgba(255, 255, 255, 0.1) !important; }
-      .row-total td::before { content: attr(data-label); }
-      .row-total td:first-child::before { content: none; } 
+      .row-total td { position: static !important; background: transparent !important; border-bottom: 1px dotted rgba(255, 255, 255, 0.1) !important; }
+      
+      /* ล้างคำสั่งเส้นสีฟ้าเดิมทิ้ง และจัดวางตัวหนังสือให้ถูกต้อง */
+      .row-total td::before { 
+        content: attr(data-label) !important; 
+        position: static !important;  /* หัวใจสำคัญ: เลิกกองรวมกันที่ top: 0 */
+        width: auto !important; 
+        height: auto !important; 
+        background: transparent !important; 
+      }
+      .row-total td:first-child::before { content: none !important; } 
+      
       .row-total td.total-label-cell {
         display: block; text-align: center; font-size: 16px; color: var(--color-primary);
         border-bottom: 1px solid var(--color-primary) !important; padding-bottom: 12px; margin-bottom: 8px;
