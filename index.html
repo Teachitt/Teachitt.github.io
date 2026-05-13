@@ -90,7 +90,7 @@
   let currentLang = localStorage.getItem('dash_lang') || 'en';
   let trades = [], livePrices = {}, liveExRate = 35.0, charts = {};
   const FINNHUB_KEY = 'd81cmgpr01qler4hqqfgd81cmgpr01qler4hqqg0';
-  const CSV_URL = 'https://docs.google.com/spreadsheets/d/1zv1K04AhC0-oOw-vYBhrtq9KV7pqS2P2SnGWTg8S5Ls/edit?usp=sharing';
+  const CSV_URL = 'https://docs.google.com/spreadsheets/d/1zv1K04AhC0-oOw-vYBhrtq9KV7pqS2P2SnGWTg8S5Ls/export?format=csv';
 
   // ใช้ API ที่อนุญาต CORS และเสถียรกว่าเดิม
   async function fetchExRate() {
