@@ -3,163 +3,107 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Stock Portfolio Pro - Dark Mode</title>
+  <title>Wealth Dashboard - Nai Than Edition</title>
   <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
   <style>
     :root {
       --font-sans: 'Prompt', sans-serif;
-      --color-primary: #3b82f6;
-      --color-success: #10b981;
-      --color-danger: #f43f5e;
-      --color-bg: #0f172a;
-      --color-panel: #1e293b;
-      --color-border: #334155;
-      --color-text-main: #f8fafc;
+      --color-primary: #60a5fa;
+      --color-success: #34d399;
+      --color-danger: #f87171;
+      --color-bg: #0b0f1a;
+      --color-panel: rgba(30, 41, 59, 0.7);
+      --color-border: rgba(255, 255, 255, 0.1);
+      --color-text-main: #f1f5f9;
       --color-text-sub: #94a3b8;
-      --color-text-desc: #64748b;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: var(--font-sans); background-color: var(--color-bg); color: var(--color-text-main); padding: 2rem 1rem; line-height: 1.5; }
+    body { 
+      font-family: var(--font-sans); 
+      background-color: var(--color-bg); 
+      background-image: radial-gradient(circle at top right, #1e293b, #0b0f1a);
+      color: var(--color-text-main); 
+      padding: 2rem 1.5rem; 
+      min-height: 100vh;
+    }
 
-    .dash-container { max-width: 1200px; margin: 0 auto; background: var(--color-panel); border-radius: 24px; padding: 2.5rem; position: relative; border: 1px solid rgba(255,255,255,0.05); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); }
+    .dash-container { 
+      max-width: 1440px; 
+      margin: 0 auto; 
+      background: var(--color-panel); 
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-radius: 32px; 
+      padding: 2.5rem; 
+      border: 1px solid var(--color-border); 
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    }
 
+    /* --- Header --- */
     .top-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 2.5rem; gap: 20px; }
-    .top-title { font-weight: 600; font-size: 1.6rem; }
+    .top-title { font-weight: 600; font-size: 1.8rem; letter-spacing: -0.02em; }
     
-    .lang-switcher { display: flex; background: var(--color-bg); padding: 4px; border-radius: 12px; border: 1px solid var(--color-border); }
-    .lang-btn { padding: 6px 16px; border: none; background: transparent; cursor: pointer; font-size: 13px; font-weight: 600; border-radius: 9px; color: var(--color-text-sub); transition: 0.2s; }
-    .lang-btn.active { background: #334155; color: #fff; }
+    .lang-switcher { display: flex; background: rgba(0,0,0,0.2); padding: 4px; border-radius: 14px; border: 1px solid var(--color-border); }
+    .lang-btn { padding: 8px 18px; border: none; background: transparent; cursor: pointer; font-size: 13px; font-weight: 600; border-radius: 10px; color: var(--color-text-sub); transition: 0.3s; }
+    .lang-btn.active { background: var(--color-primary); color: #000; }
 
-    .btn-refresh { background: var(--color-primary); color: #fff; border: none; padding: 10px 22px; border-radius: 12px; cursor: pointer; font-weight: 500; transition: 0.2s; }
-    .btn-refresh:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4); }
+    .btn-refresh { 
+      background: var(--color-primary); color: #0b0f1a; border: none; 
+      padding: 12px 24px; border-radius: 14px; cursor: pointer; font-weight: 600; 
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .btn-refresh:hover { transform: translateY(-3px); box-shadow: 0 10px 20px -5px rgba(96, 165, 250, 0.4); }
 
-    .section-label { font-size: 12px; font-weight: 600; color: var(--color-text-desc); text-transform: uppercase; margin-bottom: 16px; letter-spacing: 0.1em; }
-    
-    .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; margin-bottom: 2.5rem; }
-    .summary-card { background: rgba(255, 255, 255, 0.03); border: 1px solid var(--color-border); border-radius: 16px; padding: 20px; transition: 0.3s; }
-    .summary-card h4 { font-size: 13px; color: var(--color-text-sub); margin-bottom: 12px; font-weight: 400; }
-    .summary-card .val { font-size: 24px; font-weight: 600; margin-bottom: 4px; }
-    .summary-card .desc { font-size: 11px; color: var(--color-text-desc); line-height: 1.4; }
+    /* --- Summary --- */
+    .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-bottom: 3rem; }
+    .summary-card { background: rgba(255, 255, 255, 0.03); border: 1px solid var(--color-border); border-radius: 20px; padding: 20px; }
+    .summary-card h4 { font-size: 12px; color: var(--color-text-sub); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.05em; }
+    .summary-card .val { font-size: 24px; font-weight: 600; color: #fff; }
 
-    /* --- Scrollbar --- */
-    .table-wrap::-webkit-scrollbar { width: 6px; }
-    .table-wrap::-webkit-scrollbar-track { background: transparent; }
-    .table-wrap::-webkit-scrollbar-thumb { background-color: var(--color-border); border-radius: 10px; }
+    /* --- Charts --- */
+    .chart-row { display: grid; grid-template-columns: 1.5fr 1fr; gap: 24px; margin-bottom: 2.5rem; }
+    .chart-card { background: rgba(255, 255, 255, 0.02); border: 1px solid var(--color-border); border-radius: 24px; padding: 24px; min-height: 450px; }
 
-    /* --- Desktop Table Layout --- */
+    /* --- Tables --- */
+    .section-label { font-size: 13px; font-weight: 600; color: var(--color-text-sub); text-transform: uppercase; margin-bottom: 16px; letter-spacing: 0.1em; display: flex; align-items: center; gap: 10px; }
+    .section-label::after { content: ""; height: 1px; flex: 1; background: var(--color-border); }
+
     .table-wrap { 
-      max-height: 550px; overflow-y: auto; border: 1px solid var(--color-border); border-radius: 16px; 
-      background: rgba(0, 0, 0, 0.2); margin-bottom: 2.5rem; position: relative; 
+      max-height: 400px; overflow-y: auto; background: rgba(0, 0, 0, 0.2); 
+      border-radius: 20px; border: 1px solid var(--color-border); margin-bottom: 2.5rem;
     }
-    table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 14px; white-space: nowrap; }
-    
-    thead th { 
-      position: sticky; top: 0; z-index: 30; background-color: #1e293b !important; 
-      color: var(--color-text-desc); font-weight: 500; text-align: right; padding: 16px 20px; border: none !important; 
-    }
-    thead th:first-child { text-align: left; border-top-left-radius: 16px; }
-    thead th:last-child { border-top-right-radius: 16px; }
-    thead th::after { content: ""; position: absolute; left: 0; bottom: 0; width: 100%; height: 2px; background-color: var(--color-border); z-index: 31; }
+    table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 14px; }
+    thead th { position: sticky; top: 0; z-index: 30; background: #161b2a; color: var(--color-text-sub); font-weight: 500; text-align: right; padding: 16px 20px; }
+    thead th:first-child { text-align: left; }
+    tbody td { padding: 14px 20px; text-align: right; border-bottom: 1px solid var(--color-border); color: var(--color-text-sub); }
+    tbody td:first-child { text-align: left; color: #fff; }
+    tbody tr:hover { background: rgba(255, 255, 255, 0.02); }
 
-    tbody td { padding: 16px 20px; text-align: right; border-bottom: 1px solid var(--color-border); color: var(--color-text-sub); }
-    tbody tr:hover:not(.row-total) { background: rgba(255, 255, 255, 0.02); }
-    tbody td:first-child { text-align: left; color: #fff; font-weight: 500; }
-
-    /* การล็อคบรรทัด Total (โหมดคอมพิวเตอร์) */
-    .row-total td { position: sticky; bottom: -1px; background-color: #0f172a !important; color: #fff; font-weight: 600; z-index: 20; border-bottom: none !important; }
-    .row-total td::before { content: ""; position: absolute; left: 0; top: 0; width: 100%; height: 2px; background-color: var(--color-primary); z-index: 21; }
-    .row-total td:first-child { text-align: right; border-bottom-left-radius: 16px; } 
-    .row-total td:last-child { border-bottom-right-radius: 16px; }
+    /* --- Logos & Badges --- */
+    .stock-info-cell { display: flex; align-items: center; }
+    .stock-logo { width: 36px; height: 36px; border-radius: 50%; background: #fff; display: flex; align-items: center; justify-content: center; overflow: hidden; margin-right: 12px; border: 1px solid var(--color-border); }
+    .stock-logo img { width: 100%; height: 100%; object-fit: contain; padding: 4px; }
+    .ticker-badge { background: rgba(96, 165, 250, 0.1); color: var(--color-primary); padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: 600; }
 
     .up { color: var(--color-success) !important; }
     .down { color: var(--color-danger) !important; }
+    #loading-overlay { position: fixed; inset: 0; background: var(--color-bg); display: flex; justify-content: center; align-items: center; z-index: 1000; color: var(--color-primary); font-weight: 600; letter-spacing: 0.1em; }
 
-    .two-col { display: grid; grid-template-columns: 1.6fr 1fr; gap: 24px; }
-    .card { background: rgba(255, 255, 255, 0.02); border: 1px solid var(--color-border); border-radius: 16px; padding: 24px; }
-    #loading-overlay { position: absolute; inset: 0; background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(8px); display: flex; justify-content: center; align-items: center; z-index: 100; border-radius: 24px; color: var(--color-primary); font-size: 1.2rem; }
-
-    /* ----------------------------------------------------
-       ⭐ ส่วนปรับปรุงสำหรับมือถือ: Responsive Card Layout
-       ---------------------------------------------------- */
-    @media (max-width: 768px) { 
-      body { padding: 1rem 0.5rem; }
-      .dash-container { padding: 1.5rem; border-radius: 16px; }
-      .two-col { grid-template-columns: 1fr; } 
-      .top-bar { flex-direction: column; align-items: flex-start; } 
-      
-      .table-wrap {
-        border: none; background: transparent; padding: 0; max-height: none; overflow-y: visible; margin-bottom: 1.5rem;
-      }
-      
-      /* ปิดหัวตารางทิ้งไปเลย */
-      thead { display: none !important; }
-      
-      table, tbody, td, tr { display: block; width: 100%; }
-      
-      tbody tr {
-        background: rgba(255, 255, 255, 0.03);
-        border: 1px solid var(--color-border);
-        border-radius: 16px;
-        margin-bottom: 16px;
-        padding: 16px;
-        position: relative;
-      }
-      
-      tbody td {
-        display: flex; justify-content: space-between; align-items: center; text-align: right;
-        padding: 10px 0; border-bottom: 1px dotted rgba(255, 255, 255, 0.1); white-space: normal;
-      }
-      tbody td:last-child { border-bottom: none; }
-      
-      /* ดึงชื่อหัวข้อมาแปะในข้อมูลแต่ละแถว */
-      tbody td::before {
-        content: attr(data-label); font-size: 13px; color: var(--color-text-desc);
-        text-transform: uppercase; font-weight: 500; text-align: left; margin-right: 15px;
-      }
-      
-      tbody td:first-child {
-        font-size: 18px; border-bottom: 1px solid var(--color-border); padding-bottom: 12px; margin-bottom: 8px;
-      }
-      
-      /* -------------------------------------------------------------------------
-         🔥 แก้บั๊กตัวหนังสือทับกัน: ปลดล็อค position: absolute ออกให้หมด! 
-         ------------------------------------------------------------------------- */
-      .row-total { background: rgba(59, 130, 246, 0.1) !important; border-color: var(--color-primary) !important; }
-      .row-total td { position: static !important; background: transparent !important; border-bottom: 1px dotted rgba(255, 255, 255, 0.1) !important; }
-      
-      /* ล้างคำสั่งเส้นสีฟ้าเดิมทิ้ง และจัดวางตัวหนังสือให้ถูกต้อง */
-      .row-total td::before { 
-        content: attr(data-label) !important; 
-        position: static !important;  /* หัวใจสำคัญ: เลิกกองรวมกันที่ top: 0 */
-        width: auto !important; 
-        height: auto !important; 
-        background: transparent !important; 
-      }
-      .row-total td:first-child::before { content: none !important; } 
-      
-      .row-total td.total-label-cell {
-        display: block; text-align: center; font-size: 16px; color: var(--color-primary);
-        border-bottom: 1px solid var(--color-primary) !important; padding-bottom: 12px; margin-bottom: 8px;
-      }
-      
-      .pnl-cell { display: flex; justify-content: space-between; align-items: center; }
-      .pnl-cell br { display: none; }
-      .pnl-cell small { margin-left: 8px; font-size: 13px; }
-    }
+    @media (max-width: 1024px) { .chart-row { grid-template-columns: 1fr; } }
   </style>
 </head>
 <body>
 
+<div id="loading-overlay">🌑 NAI THAN PORTFOLIO...</div>
+
 <div class="dash-container">
-  <div id="loading-overlay">🌑 Loading Portfolio Data...</div>
-  
   <div class="top-bar">
     <div>
       <h2 class="top-title" data-i18n="top_title">My Stock Portfolio</h2>
-      <div id="current-date" style="font-size:13px; color:var(--color-text-desc); margin-top: 4px;"></div>
+      <div id="current-date" style="font-size:13px; color:var(--color-text-sub); margin-top: 4px;"></div>
     </div>
-    <div style="display:flex; align-items:center; gap:12px;">
+    <div style="display:flex; align-items:center; gap:16px;">
       <div class="lang-switcher">
         <button class="lang-btn" id="lang-en" onclick="changeLanguage('en')">EN</button>
         <button class="lang-btn" id="lang-th" onclick="changeLanguage('th')">TH</button>
@@ -169,9 +113,39 @@
   </div>
 
   <div class="section-label" data-i18n="overview_label">Portfolio Summary</div>
-  <div class="summary-grid" id="summary-panel"></div>
+  <div id="summary-panel" class="summary-grid"></div>
 
-  <div class="section-label" data-i18n="trades_label">Trade History</div>
+  <div class="chart-row">
+    <div class="chart-card">
+      <div class="section-label" data-i18n="growth_chart_title">Portfolio Growth (THB)</div>
+      <div style="height:350px;"><canvas id="growthChart"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="section-label" data-i18n="ticker_chart_title">Stock Allocation (%)</div>
+      <div style="height:350px;"><canvas id="tickerPieChart"></canvas></div>
+    </div>
+  </div>
+
+  <div class="section-label" data-i18n="holdings_label">Portfolio Holdings (Current)</div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th data-i18n="th_stock">Stock</th>
+          <th data-i18n="th_shares">Shares</th>
+          <th data-i18n="th_cost_usd">Avg Cost</th>
+          <th data-i18n="th_last_usd">Price</th>
+          <th data-i18n="th_val_thb">Value (THB)</th>
+          <th data-i18n="th_val_usd">Value (USD)</th>
+          <th data-i18n="th_pnl">Total P&L</th>
+        </tr>
+      </thead>
+      <tbody id="holdings-body"></tbody>
+    </table>
+  </div>
+
+  <!-- นำ Trade History กลับมาตามคำขอของ Nai Than -->
+  <div class="section-label" data-i18n="trades_label">Trade History (Logs)</div>
   <div class="table-wrap">
     <table>
       <thead>
@@ -180,10 +154,9 @@
           <th data-i18n="th_date">Date</th>
           <th data-i18n="th_shares">Shares</th>
           <th data-i18n="th_cost_thb">Cost (THB)</th>
-          <th data-i18n="th_cost_usd">Cost (USD)</th>
-          <th data-i18n="th_last_usd">Last (USD)</th>
+          <th data-i18n="th_cost_usd">Price</th>
+          <th data-i18n="th_last_usd">Last</th>
           <th data-i18n="th_val_thb">Value (THB)</th>
-          <th data-i18n="th_val_usd">Value (USD)</th>
           <th data-i18n="th_pnl">P&L</th>
         </tr>
       </thead>
@@ -191,26 +164,15 @@
     </table>
   </div>
 
-  <div class="two-col">
-    <div class="card">
-      <div class="section-label" data-i18n="growth_chart_title">Portfolio Growth (THB)</div>
-      <div style="height:320px;"><canvas id="growthChart"></canvas></div>
-    </div>
-    <div class="card">
-      <div class="section-label" data-i18n="ticker_chart_title">Stock Allocation (%)</div>
-      <div style="height:320px;"><canvas id="tickerPieChart"></canvas></div>
-    </div>
-  </div>
-
-  <div id="update-time-note" style="font-size:12px; color:var(--color-text-desc); text-align:center; margin-top:30px;"></div>
+  <div id="update-time-note" style="font-size:12px; color:var(--color-text-sub); text-align:center; margin-top:20px; opacity: 0.6;"></div>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 <script>
   const i18n = {
-    en: { top_title: "My Stock Portfolio", btn_refresh: "Update Prices", overview_label: "Portfolio Summary", trades_label: "Trade History", th_stock: "Stock", th_date: "Date", th_shares: "Shares", th_cost_thb: "Cost (THB)", th_cost_usd: "Cost (USD)", th_last_usd: "Last (USD)", th_val_thb: "Value (THB)", th_val_usd: "Value (USD)", th_pnl: "P&L", th_total: "Total", metric_cost: "Total Investment", metric_val: "Market Value", metric_pnl: "Total Profit/Loss", metric_ex: "Exchange Rate", desc_cost: "Actual cash spent to buy all stocks.", desc_val: "Current portfolio value if sold now.", desc_pnl: "Overall performance since inception.", desc_ex: "Current USD to THB conversion rate.", chart_cost: "Cumulative Cost", chart_value: "Market Value" },
-    th: { top_title: "พอร์ตหุ้นของฉัน", btn_refresh: "อัพเดทราคาล่าสุด", overview_label: "สรุปภาพรวมพอร์ต", trades_label: "รายการซื้อขาย", th_stock: "หุ้น", th_date: "วันที่", th_shares: "จำนวนหุ้น", th_cost_thb: "ต้นทุน (THB)", th_cost_usd: "ต้นทุน (USD)", th_last_usd: "ราคาล่าสุด (USD)", th_val_thb: "มูลค่า (THB)", th_val_usd: "มูลค่า (USD)", th_pnl: "กำไร/ขาดทุน", th_total: "รวมทั้งหมด", metric_cost: "เงินต้นที่ลงทุน", metric_val: "มูลค่าตลาดปัจจุบัน", metric_pnl: "กำไร/ขาดทุนรวม", metric_ex: "อัตราแลกเปลี่ยน", desc_cost: "เงินสดจริงๆ ที่คุณจ่ายซื้อหุ้นทั้งหมด", desc_val: "มูลค่าหุ้นที่มีอยู่หากขายทั้งหมดตอนนี้", desc_pnl: "ผลงานรวมของพอร์ตตั้งแต่เริ่มลงทุน", desc_ex: "ค่าเงินที่ใช้แปลงดอลลาร์เป็นบาท", chart_cost: "ต้นทุนสะสม", chart_value: "มูลค่าตามตลาด" }
+    en: { top_title: "My Stock Portfolio", btn_refresh: "Update Prices", overview_label: "Summary", holdings_label: "Holdings", trades_label: "Transaction History", th_stock: "Asset", th_date: "Date", th_shares: "Shares", th_cost_thb: "Cost (THB)", th_cost_usd: "Price/Cost", th_last_usd: "Market Price", th_val_thb: "Value (THB)", th_val_usd: "Value (USD)", th_pnl: "P&L", metric_cost: "Cumulative Cost", metric_val: "Market Value", metric_pnl: "Total Return", metric_ex: "FX Rate" },
+    th: { top_title: "พอร์ตหุ้นของฉัน", btn_refresh: "ดึงราคาล่าสุด", overview_label: "สรุปภาพรวม", holdings_label: "หุ้นในพอร์ต", trades_label: "ประวัติรายการทั้งหมด", th_stock: "สินทรัพย์", th_date: "วันที่", th_shares: "จำนวน", th_cost_thb: "ต้นทุน (THB)", th_cost_usd: "ราคา/ต้นทุน", th_last_usd: "ราคาตลาด", th_val_thb: "มูลค่า (THB)", th_val_usd: "มูลค่า (USD)", th_pnl: "กำไร/ขาดทุน", metric_cost: "ต้นทุนสะสม", metric_val: "มูลค่าตลาด", metric_pnl: "กำไรสุทธิ", metric_ex: "อัตราแลกเปลี่ยน" }
   };
 
   let currentLang = localStorage.getItem('dash_lang') || 'en';
@@ -218,12 +180,13 @@
   const FINNHUB_KEY = 'd81cmgpr01qler4hqqfgd81cmgpr01qler4hqqg0';
   const CSV_URL = 'https://docs.google.com/spreadsheets/d/1zv1K04AhC0-oOw-vYBhrtq9KV7pqS2P2SnGWTg8S5Ls/export?format=csv';
 
+  const getLogoUrl = (t) => {
+    const d = { 'AAPL': 'apple.com', 'VOO': 'vanguard.com', 'TSLA': 'tesla.com', 'MU': 'micron.com', 'ASTS': 'ast-science.com', 'TTWO': 'take2games.com' };
+    return d[t] ? `https://logo.clearbit.com/${d[t]}` : `https://financialmodelingprep.com/image-stock/${t}.png`;
+  };
+
   async function fetchExRate() {
-    try {
-      const response = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
-      const data = await response.json();
-      if (data && data.rates && data.rates.THB) liveExRate = data.rates.THB;
-    } catch (e) { console.warn("API Error"); }
+    try { const r = await fetch('https://api.exchangerate-api.com/v4/latest/USD'); const d = await r.json(); if (d.rates.THB) liveExRate = d.rates.THB; } catch(e) {}
   }
 
   function fetchTrades() {
@@ -231,15 +194,9 @@
       download: true, header: false, skipEmptyLines: true,
       complete: async function(results) {
         document.getElementById('loading-overlay').style.display = 'none';
-        trades = results.data.slice(1).map(row => ({
-          ticker: row[0]?.replace(/"/g, '').trim(),
-          date: row[2]?.trim(),
-          amountTHB: parseFloat(row[4]?.replace(/,/g, '') || 0),
-          priceUSD: parseFloat(row[5]?.replace(/,/g, '') || 0),
-          shares: parseFloat(row[6]?.replace(/,/g, '') || 0),
-          amountUSD: parseFloat(row[8]?.replace(/,/g, '') || 0)
+        trades = results.data.slice(1).map(r => ({
+          ticker: r[0]?.trim(), date: r[2]?.trim(), amountTHB: parseFloat(r[4] || 0), priceUSD: parseFloat(r[5] || 0), shares: parseFloat(r[6] || 0), amountUSD: parseFloat(r[8] || 0)
         })).filter(t => t.ticker);
-        trades.forEach(t => livePrices[t.ticker] = t.priceUSD);
         await fetchExRate();
         applyLanguage(currentLang);
         fetchLivePrices();
@@ -251,32 +208,12 @@
   async function fetchLivePrices() {
     const btn = document.getElementById('refresh-btn');
     btn.disabled = true;
-    await fetchExRate();
     const tickers = [...new Set(trades.map(t => t.ticker))];
-    for (let s of tickers) {
-      try {
-        const res = await fetch(`https://finnhub.io/api/v1/quote?symbol=${s}&token=${FINNHUB_KEY}`);
-        const data = await res.json();
-        if (data.c) livePrices[s] = data.c;
-      } catch (e) {}
-    }
+    const fetchPromises = tickers.map(s => fetch(`https://finnhub.io/api/v1/quote?symbol=${s}&token=${FINNHUB_KEY}`).then(res => res.json()).then(data => { if (data.c) livePrices[s] = data.c; }));
+    await Promise.all(fetchPromises);
     renderAll();
     btn.disabled = false;
     document.getElementById('update-time-note').innerText = `Last updated: ${new Date().toLocaleTimeString()} (Auto 5m)`;
-  }
-
-  function changeLanguage(lang) {
-    currentLang = lang;
-    localStorage.setItem('dash_lang', lang);
-    applyLanguage(lang);
-    renderAll();
-  }
-
-  function applyLanguage(lang) {
-    document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById(`lang-${lang}`).classList.add('active');
-    document.querySelectorAll('[data-i18n]').forEach(el => el.innerText = i18n[lang][el.dataset.i18n] || el.innerText);
-    document.getElementById('current-date').innerText = new Date().toLocaleDateString(lang === 'th' ? 'th-TH' : 'en-US', { year:'numeric', month:'long', day:'numeric' });
   }
 
   function formatNum(n, d = 2) { return n.toLocaleString(undefined, { minimumFractionDigits: d, maximumFractionDigits: d }); }
@@ -284,144 +221,78 @@
   function renderMetrics() {
     const costTHB = trades.reduce((s, t) => s + t.amountTHB, 0);
     let valUSD = 0, costUSD = 0;
-    trades.forEach(t => {
-      costUSD += t.amountUSD;
-      valUSD += (livePrices[t.ticker] || t.priceUSD) * t.shares;
-    });
+    trades.forEach(t => { costUSD += t.amountUSD; valUSD += (livePrices[t.ticker] || t.priceUSD) * t.shares; });
     const valTHB = valUSD * liveExRate;
     const pnlUSD = valUSD - costUSD;
     const pnlPct = costUSD > 0 ? (pnlUSD / costUSD) * 100 : 0;
     const lang = i18n[currentLang];
-
     document.getElementById('summary-panel').innerHTML = `
-      <div class="summary-card">
-        <h4>${lang.metric_cost}</h4>
-        <div class="val">฿${formatNum(costTHB, 0)}</div>
-        <div style="font-size:14px; color:var(--color-text-sub)">$${formatNum(costUSD)}</div>
-        <div class="desc">${lang.desc_cost}</div>
-      </div>
-      <div class="summary-card">
-        <h4>${lang.metric_val}</h4>
-        <div class="val" style="color:#fff">฿${formatNum(valTHB, 0)}</div>
-        <div style="font-size:14px; color:var(--color-text-sub)">$${formatNum(valUSD)}</div>
-        <div class="desc">${lang.desc_val}</div>
-      </div>
-      <div class="summary-card">
-        <h4>${lang.metric_pnl}</h4>
-        <div class="val ${pnlUSD>=0?'up':'down'}">${pnlUSD>=0?'+':''}$${formatNum(Math.abs(pnlUSD))}</div>
-        <div class="${pnlPct>=0?'up':'down'}" style="font-size:14px; font-weight:600;">${pnlPct>=0?'+':''}${formatNum(pnlPct)}%</div>
-        <div class="desc">${lang.desc_pnl}</div>
-      </div>
-      <div class="summary-card">
-        <h4>${lang.metric_ex}</h4>
-        <div class="val" style="color:var(--color-primary)">฿${formatNum(liveExRate)}</div>
-        <div style="font-size:14px; color:var(--color-text-sub)">USD / THB</div>
-        <div class="desc">${lang.desc_ex}</div>
-      </div>
-    `;
+      <div class="summary-card"><h4>${lang.metric_cost}</h4><div class="val">฿${formatNum(costTHB, 0)}</div><div style="font-size:14px; color:var(--color-text-sub)">$${formatNum(costUSD)}</div></div>
+      <div class="summary-card"><h4>${lang.metric_val}</h4><div class="val" style="color:var(--color-success)">฿${formatNum(valTHB, 0)}</div><div style="font-size:14px; color:var(--color-text-sub)">$${formatNum(valUSD)}</div></div>
+      <div class="summary-card"><h4>${lang.metric_pnl}</h4><div class="val ${pnlUSD>=0?'up':'down'}">${pnlUSD>=0?'+':''}$${formatNum(Math.abs(pnlUSD))}</div><div class="${pnlPct>=0?'up':'down'}" style="font-size:14px;">${pnlPct>=0?'+':''}${formatNum(pnlPct)}%</div></div>
+      <div class="summary-card"><h4>${lang.metric_ex}</h4><div class="val" style="color:var(--color-primary)">${formatNum(liveExRate)}</div><div style="font-size:14px; color:var(--color-text-sub)">USD/THB</div></div>`;
+  }
+
+  function renderHoldings() {
+    const grouped = {};
+    trades.forEach(t => {
+      if (!grouped[t.ticker]) grouped[t.ticker] = { shares: 0, costUSD: 0 };
+      grouped[t.ticker].shares += t.shares; grouped[t.ticker].costUSD += t.amountUSD;
+    });
+    const holdingsHTML = Object.keys(grouped).filter(t => Math.abs(grouped[t].shares) > 0.000001).map(t => {
+      const d = grouped[t]; const lp = livePrices[t] || (d.costUSD/d.shares); const vUSD = lp * d.shares;
+      const pnl = vUSD - d.costUSD; const pnlP = (pnl / d.costUSD) * 100;
+      return `<tr>
+        <td><div class="stock-info-cell"><div class="stock-logo"><img src="${getLogoUrl(t)}" onerror="this.src='https://ui-avatars.com/api/?name=${t}'"></div><span class="ticker-badge">${t}</span></div></td>
+        <td>${d.shares.toFixed(4)}</td><td>$${formatNum(d.costUSD/d.shares)}</td><td>$${formatNum(lp)}</td><td style="color:#fff; font-weight:600">฿${formatNum(vUSD*liveExRate, 0)}</td><td>$${formatNum(vUSD)}</td>
+        <td class="${pnl>=0?'up':'down'}"><b>${pnl>=0?'+':''}$${formatNum(Math.abs(pnl))}</b><br><small>${pnlP.toFixed(2)}%</small></td>
+      </tr>`;
+    }).join('');
+    document.getElementById('holdings-body').innerHTML = holdingsHTML;
   }
 
   function renderTable() {
-    let totalCostTHB = 0, totalCostUSD = 0, totalValTHB = 0, totalValUSD = 0, totalPnlUSD = 0;
-    const langText = i18n[currentLang];
-
-    const rowsHTML = trades.map(t => {
-      const curP = livePrices[t.ticker] || t.priceUSD;
-      const curValUSD = curP * t.shares;
-      const curValTHB = curValUSD * liveExRate;
-      const pnl = curValUSD - t.amountUSD;
-      const pnlPct = ((curP - t.priceUSD) / t.priceUSD) * 100;
-      
-      totalCostTHB += t.amountTHB;
-      totalCostUSD += t.amountUSD;
-      totalValTHB += curValTHB;
-      totalValUSD += curValUSD;
-      totalPnlUSD += pnl;
-
-      return `<tr>
-        <td data-label="${langText.th_stock}"><b>${t.ticker}</b></td>
-        <td data-label="${langText.th_date}">${t.date}</td>
-        <td data-label="${langText.th_shares}">${t.shares.toFixed(4)}</td>
-        <td data-label="${langText.th_cost_thb}">฿${formatNum(t.amountTHB, 0)}</td>
-        <td data-label="${langText.th_cost_usd}">$${formatNum(t.priceUSD)}</td>
-        <td data-label="${langText.th_last_usd}">$${formatNum(curP)}</td>
-        <td data-label="${langText.th_val_thb}" style="color:#fff; font-weight:600">฿${formatNum(curValTHB, 0)}</td>
-        <td data-label="${langText.th_val_usd}">$${formatNum(curValUSD)}</td>
-        <td data-label="${langText.th_pnl}" class="pnl-cell ${pnl>=0?'up':'down'}"><b>${pnl>=0?'+':''}$${formatNum(Math.abs(pnl))}</b><br><small>${pnlPct>=0?'+':''}${pnlPct.toFixed(2)}%</small></td>
-      </tr>`;
+    document.getElementById('table-body').innerHTML = trades.map(t => {
+      const lp = livePrices[t.ticker] || t.priceUSD; const pnl = (lp * t.shares) - t.amountUSD;
+      return `<tr><td><span class="ticker-badge">${t.ticker}</span></td><td>${t.date}</td><td>${t.shares.toFixed(4)}</td><td>฿${formatNum(t.amountTHB, 0)}</td><td>$${formatNum(t.priceUSD)}</td><td>$${formatNum(lp)}</td><td>฿${formatNum(lp * t.shares * liveExRate, 0)}</td><td class="${pnl>=0?'up':'down'}">$${formatNum(pnl)}</td></tr>`;
     }).join('');
-
-    const totalPnlPct = totalCostUSD > 0 ? (totalPnlUSD / totalCostUSD) * 100 : 0;
-
-    const footerHTML = `
-      <tr class="row-total">
-        <td colspan="3" class="total-label-cell">${langText.th_total || 'Total'}</td>
-        <td data-label="${langText.th_cost_thb}">฿${formatNum(totalCostTHB, 0)}</td>
-        <td data-label="${langText.th_cost_usd}">$${formatNum(totalCostUSD)}</td>
-        <td data-label="${langText.th_last_usd}">-</td>
-        <td data-label="${langText.th_val_thb}">฿${formatNum(totalValTHB, 0)}</td>
-        <td data-label="${langText.th_val_usd}">$${formatNum(totalValUSD)}</td>
-        <td data-label="${langText.th_pnl}" class="pnl-cell ${totalPnlUSD>=0?'up':'down'}">
-          <b>${totalPnlUSD>=0?'+':''}$${formatNum(Math.abs(totalPnlUSD))}</b><br>
-          <small>${totalPnlPct>=0?'+':''}${formatNum(totalPnlPct)}%</small>
-        </td>
-      </tr>
-    `;
-
-    document.getElementById('table-body').innerHTML = rowsHTML + footerHTML;
   }
 
   function renderCharts() {
-    Chart.defaults.color = '#94a3b8';
-    Chart.defaults.borderColor = 'rgba(255,255,255,0.05)';
+    Chart.defaults.color = '#94a3b8'; Chart.defaults.borderColor = 'rgba(255,255,255,0.05)'; Chart.defaults.font.family = 'Prompt';
     const ctxG = document.getElementById('growthChart').getContext('2d');
     if (charts.growth) charts.growth.destroy();
     const sorted = [...trades].sort((a,b) => new Date(a.date) - new Date(b.date));
-    if (sorted.length === 0) return;
-    const startDate = new Date(sorted[0].date);
-    const endDate = new Date();
     const labels = [], costData = [], valueData = [];
-    let curr = new Date(startDate);
-    let dayCounter = 1;
-    while (curr <= endDate) {
-      const dateStr = curr.toISOString().split('T')[0];
-      const tradesUpToNow = sorted.filter(t => t.date <= dateStr);
-      let dayCost = 0, dayVal = 0;
-      tradesUpToNow.forEach(t => {
-        dayCost += t.amountTHB;
-        const basePrice = livePrices[t.ticker] || t.priceUSD;
-        const volatility = Math.sin(dayCounter * 0.5 + t.ticker.length) * 0.02; 
-        const simulatedPrice = basePrice * (1 + volatility);
-        dayVal += simulatedPrice * t.shares * liveExRate;
-      });
-      labels.push(`Day ${dayCounter}`);
-      costData.push(dayCost);
-      valueData.push(dayVal);
-      curr.setDate(curr.getDate() + 1);
-      dayCounter++;
-    }
-    charts.growth = new Chart(ctxG, {
-      type: 'line',
-      data: { labels, datasets: [
-        { label: i18n[currentLang].chart_value, data: valueData, borderColor: '#10b981', backgroundColor: 'rgba(16,185,129,0.05)', fill: true, tension: 0.4, pointRadius: (ctx) => ctx.dataIndex === labels.length - 1 ? 5 : 0 },
-        { label: i18n[currentLang].chart_cost, data: costData, borderColor: '#64748b', borderDash: [5, 5], fill: false, tension: 0 }
-      ]},
-      options: { responsive: true, maintainAspectRatio: false, scales: { x: { ticks: { autoSkip: true, maxTicksLimit: 12 } }, y: { ticks: { callback: v => '฿' + v.toLocaleString() } } } }
+    let dCost = 0, dVal = 0;
+    sorted.forEach((t, i) => {
+      dCost += t.amountTHB; dVal += (livePrices[t.ticker] || t.priceUSD) * t.shares * liveExRate;
+      labels.push(`Day ${i+1}`); costData.push(dCost); valueData.push(dVal);
     });
+    charts.growth = new Chart(ctxG, { type: 'line', data: { labels, datasets: [
+      { label: i18n[currentLang].chart_value, data: valueData, borderColor: '#10b981', backgroundColor: 'rgba(16,185,129,0.1)', fill: true, tension: 0.4, borderWidth: 3, pointRadius: (ctx) => ctx.dataIndex === labels.length - 1 ? 6 : 0, pointBackgroundColor: '#10b981' },
+      { label: i18n[currentLang].chart_cost, data: costData, borderColor: '#64748b', borderDash: [5, 5], fill: false, stepped: 'before', borderWidth: 2, pointRadius: (ctx) => ctx.dataIndex % 5 === 0 || ctx.dataIndex === labels.length - 1 ? 4 : 0, pointBackgroundColor: '#475569' }
+    ]}, options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false }, plugins: { legend: { position: 'top' } }, scales: { y: { ticks: { callback: (v) => '฿' + v.toLocaleString() } } } } });
+
     const ctxP = document.getElementById('tickerPieChart').getContext('2d');
     if (charts.pie) charts.pie.destroy();
-    const byTicker = {};
-    trades.forEach(t => byTicker[t.ticker] = (byTicker[t.ticker]||0) + (livePrices[t.ticker] || t.priceUSD) * t.shares * liveExRate);
-    const totalV = Object.values(byTicker).reduce((a, b) => a + b, 0);
-    const pieLabels = Object.keys(byTicker).map(k => `${k} (${((byTicker[k]/totalV)*100).toFixed(1)}%)`);
-    charts.pie = new Chart(ctxP, {
-      type: 'doughnut',
-      data: { labels: pieLabels, datasets: [{ data: Object.values(byTicker), backgroundColor: ['#3b82f6','#10b981','#f59e0b','#f43f5e','#8b5cf6','#06b6d4'], borderWidth: 0 }]},
-      options: { responsive: true, maintainAspectRatio: false, cutout: '75%', plugins: { legend: { position: 'bottom' } } }
+    const byTicker = {}; trades.forEach(t => { 
+        const val = (livePrices[t.ticker] || t.priceUSD) * t.shares * liveExRate;
+        if(val > 0) byTicker[t.ticker] = (byTicker[t.ticker]||0) + val;
     });
+    const totalV = Object.values(byTicker).reduce((a, b) => a + b, 0);
+    const sortedTickers = Object.keys(byTicker).sort((a,b) => byTicker[b] - byTicker[a]);
+    charts.pie = new Chart(ctxP, { type: 'doughnut', data: { labels: sortedTickers.map(k => `${k} (${((byTicker[k]/totalV)*100).toFixed(1)}%)`), datasets: [{ data: sortedTickers.map(k => byTicker[k]), backgroundColor: ['#60a5fa','#34d399','#fbbf24','#f87171','#a78bfa','#06b6d4'], borderWidth: 0 }]}, options: { responsive: true, maintainAspectRatio: false, cutout: '72%', plugins: { legend: { position: 'bottom', labels: { padding: 15 } } } } });
   }
 
-  function renderAll() { renderMetrics(); renderTable(); renderCharts(); }
+  function changeLanguage(lang) { currentLang = lang; localStorage.setItem('dash_lang', lang); applyLanguage(lang); renderAll(); }
+  function applyLanguage(lang) {
+    document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active')); document.getElementById(`lang-${lang}`).classList.add('active');
+    document.querySelectorAll('[data-i18n]').forEach(el => el.innerText = i18n[lang][el.dataset.i18n]);
+    document.getElementById('current-date').innerText = new Date().toLocaleDateString(lang === 'th' ? 'th-TH' : 'en-US', { year:'numeric', month:'long', day:'numeric' });
+  }
+
+  function renderAll() { renderMetrics(); renderHoldings(); renderTable(); renderCharts(); }
   fetchTrades();
 </script>
 </body>
