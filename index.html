@@ -70,10 +70,10 @@
     .section-label::after { content: ""; height: 1px; flex: 1; background: var(--color-border); }
 
     .table-wrap { 
-      max-height: 400px; overflow-y: auto; background: rgba(0, 0, 0, 0.2); 
+      max-height: 400px; overflow: auto; background: rgba(0, 0, 0, 0.2); 
       border-radius: 20px; border: 1px solid var(--color-border); margin-bottom: 2.5rem;
     }
-    table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 14px; }
+    table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 14px; white-space: nowrap; }
     thead th { position: sticky; top: 0; z-index: 30; background: #161b2a; color: var(--color-text-sub); font-weight: 500; text-align: right; padding: 16px 20px; }
     thead th:first-child { text-align: left; }
     tbody td { padding: 14px 20px; text-align: right; border-bottom: 1px solid var(--color-border); color: var(--color-text-sub); }
@@ -91,6 +91,39 @@
     #loading-overlay { position: fixed; inset: 0; background: var(--color-bg); display: flex; justify-content: center; align-items: center; z-index: 1000; color: var(--color-primary); font-weight: 600; letter-spacing: 0.1em; }
 
     @media (max-width: 1024px) { .chart-row { grid-template-columns: 1fr; } }
+    @media (max-width: 768px) { 
+      .mobile-card-table, .mobile-card-table thead, .mobile-card-table tbody, .mobile-card-table th, .mobile-card-table td, .mobile-card-table tr { display: block; }
+      .mobile-card-table thead tr { position: absolute; top: -9999px; left: -9999px; }
+      .mobile-card-table tr { margin-bottom: 16px; border: 1px solid var(--color-border); border-radius: 16px; overflow: hidden; background: rgba(0,0,0,0.3); }
+      .mobile-card-table td { 
+        position: relative; 
+        padding: 12px 16px 12px 45% !important; 
+        text-align: right !important; 
+        border-bottom: 1px solid var(--color-border);
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        min-height: 48px;
+        white-space: normal;
+      }
+      .mobile-card-table td:last-child { border-bottom: none; }
+      .mobile-card-table td::before { 
+        content: attr(data-label); 
+        position: absolute; 
+        left: 16px; 
+        top: 50%;
+        transform: translateY(-50%);
+        width: 40%; 
+        text-align: left; 
+        font-weight: 500; 
+        color: var(--color-text-sub); 
+        white-space: normal;
+        line-height: 1.2;
+      }
+      .mobile-card-table { white-space: normal; }
+      .mobile-card-wrap { overflow: visible !important; background: transparent !important; border: none !important; max-height: none !important; }
+      .dash-container { padding: 1.5rem 1rem; }
+    }
   </style>
 </head>
 <body>
@@ -127,8 +160,8 @@
   </div>
 
   <div class="section-label" data-i18n="holdings_label">Portfolio Holdings (Current)</div>
-  <div class="table-wrap">
-    <table>
+  <div class="table-wrap mobile-card-wrap">
+    <table class="mobile-card-table">
       <thead>
         <tr>
           <th data-i18n="th_stock">Stock</th>
@@ -239,22 +272,33 @@
       if (!grouped[t.ticker]) grouped[t.ticker] = { shares: 0, costUSD: 0 };
       grouped[t.ticker].shares += t.shares; grouped[t.ticker].costUSD += t.amountUSD;
     });
+    const lang = i18n[currentLang];
     const holdingsHTML = Object.keys(grouped).filter(t => Math.abs(grouped[t].shares) > 0.000001).map(t => {
       const d = grouped[t]; const lp = livePrices[t] || (d.costUSD/d.shares); const vUSD = lp * d.shares;
       const pnl = vUSD - d.costUSD; const pnlP = (pnl / d.costUSD) * 100;
       return `<tr>
-        <td><div class="stock-info-cell"><div class="stock-logo"><img src="${getLogoUrl(t)}" onerror="this.src='https://ui-avatars.com/api/?name=${t}'"></div><span class="ticker-badge">${t}</span></div></td>
-        <td>${d.shares.toFixed(4)}</td><td>$${formatNum(d.costUSD/d.shares)}</td><td>$${formatNum(lp)}</td><td style="color:#fff; font-weight:600">฿${formatNum(vUSD*liveExRate, 0)}</td><td>$${formatNum(vUSD)}</td>
-        <td class="${pnl>=0?'up':'down'}"><b>${pnl>=0?'+':''}$${formatNum(Math.abs(pnl))}</b><br><small>${pnlP.toFixed(2)}%</small></td>
+        <td data-label="${lang.th_stock}"><div class="stock-info-cell"><div class="stock-logo"><img src="${getLogoUrl(t)}" onerror="this.src='https://ui-avatars.com/api/?name=${t}'"></div><span class="ticker-badge">${t}</span></div></td>
+        <td data-label="${lang.th_shares}">${d.shares.toFixed(4)}</td><td data-label="${lang.th_cost_usd}">$${formatNum(d.costUSD/d.shares)}</td><td data-label="${lang.th_last_usd}">$${formatNum(lp)}</td><td data-label="${lang.th_val_thb}" style="color:#fff; font-weight:600">฿${formatNum(vUSD*liveExRate, 0)}</td><td data-label="${lang.th_val_usd}">$${formatNum(vUSD)}</td>
+        <td data-label="${lang.th_pnl}" class="${pnl>=0?'up':'down'}"><div style="text-align:right"><b>${pnl>=0?'+':''}$${formatNum(Math.abs(pnl))}</b><br><small>${pnlP.toFixed(2)}%</small></div></td>
       </tr>`;
     }).join('');
     document.getElementById('holdings-body').innerHTML = holdingsHTML;
   }
 
   function renderTable() {
+    const lang = i18n[currentLang];
     document.getElementById('table-body').innerHTML = trades.map(t => {
       const lp = livePrices[t.ticker] || t.priceUSD; const pnl = (lp * t.shares) - t.amountUSD;
-      return `<tr><td><span class="ticker-badge">${t.ticker}</span></td><td>${t.date}</td><td>${t.shares.toFixed(4)}</td><td>฿${formatNum(t.amountTHB, 0)}</td><td>$${formatNum(t.priceUSD)}</td><td>$${formatNum(lp)}</td><td>฿${formatNum(lp * t.shares * liveExRate, 0)}</td><td class="${pnl>=0?'up':'down'}">$${formatNum(pnl)}</td></tr>`;
+      return `<tr>
+        <td data-label="${lang.th_stock}"><span class="ticker-badge">${t.ticker}</span></td>
+        <td data-label="${lang.th_date}">${t.date}</td>
+        <td data-label="${lang.th_shares}">${t.shares.toFixed(4)}</td>
+        <td data-label="${lang.th_cost_thb}">฿${formatNum(t.amountTHB, 0)}</td>
+        <td data-label="${lang.th_cost_usd}">$${formatNum(t.priceUSD)}</td>
+        <td data-label="${lang.th_last_usd}">$${formatNum(lp)}</td>
+        <td data-label="${lang.th_val_thb}">฿${formatNum(lp * t.shares * liveExRate, 0)}</td>
+        <td data-label="${lang.th_pnl}" class="${pnl>=0?'up':'down'}">$${formatNum(pnl)}</td>
+      </tr>`;
     }).join('');
   }
 
@@ -265,14 +309,15 @@
     const sorted = [...trades].sort((a,b) => new Date(a.date) - new Date(b.date));
     const labels = [], costData = [], valueData = [];
     let dCost = 0, dVal = 0;
+    const lang = i18n[currentLang];
     sorted.forEach((t, i) => {
       dCost += t.amountTHB; dVal += (livePrices[t.ticker] || t.priceUSD) * t.shares * liveExRate;
-      labels.push(`Day ${i+1}`); costData.push(dCost); valueData.push(dVal);
+      labels.push(t.date); costData.push(dCost); valueData.push(dVal);
     });
     charts.growth = new Chart(ctxG, { type: 'line', data: { labels, datasets: [
-      { label: i18n[currentLang].chart_value, data: valueData, borderColor: '#10b981', backgroundColor: 'rgba(16,185,129,0.1)', fill: true, tension: 0.4, borderWidth: 3, pointRadius: (ctx) => ctx.dataIndex === labels.length - 1 ? 6 : 0, pointBackgroundColor: '#10b981' },
-      { label: i18n[currentLang].chart_cost, data: costData, borderColor: '#64748b', borderDash: [5, 5], fill: false, stepped: 'before', borderWidth: 2, pointRadius: (ctx) => ctx.dataIndex % 5 === 0 || ctx.dataIndex === labels.length - 1 ? 4 : 0, pointBackgroundColor: '#475569' }
-    ]}, options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false }, plugins: { legend: { position: 'top' } }, scales: { y: { ticks: { callback: (v) => '฿' + v.toLocaleString() } } } } });
+      { label: lang.metric_val, data: valueData, borderColor: '#10b981', backgroundColor: 'rgba(16,185,129,0.1)', fill: true, tension: 0.4, borderWidth: 3, pointRadius: (ctx) => ctx.dataIndex === labels.length - 1 ? 6 : 0, pointBackgroundColor: '#10b981' },
+      { label: lang.metric_cost, data: costData, borderColor: '#64748b', borderDash: [5, 5], fill: false, stepped: 'before', borderWidth: 2, pointRadius: (ctx) => ctx.dataIndex % 5 === 0 || ctx.dataIndex === labels.length - 1 ? 4 : 0, pointBackgroundColor: '#475569' }
+    ]}, options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false }, plugins: { legend: { position: 'top' }, tooltip: { callbacks: { afterBody: (ctxs) => { const v = ctxs.find(c => c.datasetIndex===0)?.raw; const c = ctxs.find(c => c.datasetIndex===1)?.raw; if(v!==undefined && c!==undefined) { const pnl = v - c; return `\n${lang.metric_pnl}: ${pnl>=0?'+':''}${pnl<0?'-':''}฿${formatNum(Math.abs(pnl),0)}`; } return ''; } } } }, scales: { y: { ticks: { callback: (v) => '฿' + v.toLocaleString() } } } } });
 
     const ctxP = document.getElementById('tickerPieChart').getContext('2d');
     if (charts.pie) charts.pie.destroy();
